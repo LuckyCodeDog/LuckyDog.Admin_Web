@@ -1,0 +1,30 @@
+@import url("antd/dist/reset.css");
+#root{
+    height: 100%;
+}
+#root .app{
+    height: 100%;
+}
+
+.app{
+    display: flex;
+    background-color: #f8f9fa;
+}
+
+.m-slide {
+    width: 256px;
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+}
+
+.m-content {
+    flex: 1;
+    height: 100%;
+    overflow: auto ;
+    background-color: whitesmoke;
+}
+
+.m-operate{
+    text-align: right;
+    padding-bottom: 10px;
+}
