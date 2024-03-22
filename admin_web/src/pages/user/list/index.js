@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { theme, Space, Table, Tag, Input, Button, Col, Row, Avatar, Pagination, Switch } from 'antd'
+import { theme, Space, Table, Tag, Input, Button, Col, Row, Avatar, Pagination, Switch,message } from 'antd'
 import apiUrl from "../../../api/constUrl.js"
 import axios from "../../../api/service.js"
 import UserInfoForm from '../../../components/Forms/user_info_form.js';
-import { SearchOutlined, UserAddOutlined, UserOutlined,DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserAddOutlined, UserOutlined,DeleteOutlined,TeamOutlined } from '@ant-design/icons';
 const UserManagement = () => {
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
@@ -79,7 +80,7 @@ const UserManagement = () => {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: 'email',
+      title: 'Email',
       dataIndex: 'email',
       key: 'email',
     },
@@ -89,15 +90,15 @@ const UserManagement = () => {
       key: 'address',
     },
     {
-      title: 'status',
+      title: 'Status',
       key: 'status',
       dataIndex: 'status',
-      render: (status) => {
+      render: (status,record) => {
 
         var falg =  status ===0?  true :false
         return   <Switch checkedChildren="Active"
         unCheckedChildren="Frozen"
-        defaultValue={falg } tabIndex={1}  size='large' />
+       defaultChecked={falg} tabIndex={1} onChange={()=>{ handleUserStatusChange(record.userId) } } size='large' />
       }
     },
     {
@@ -106,7 +107,7 @@ const UserManagement = () => {
       render: (record) => {
         return <>
           <Space>
-            <Button  type="primary">Assign Roles</Button>
+            <Button  type="primary" icon={<TeamOutlined />}>Assign Roles</Button>
             <Button icon={<DeleteOutlined/>} danger  type="primary">Delete</Button>
           </Space>
         </>
@@ -114,6 +115,30 @@ const UserManagement = () => {
     },
   ];
 
+  const handleUserStatusChange =(userId)=>{
+          axios.put(`${apiUrl.userInfo}/${userId}` ).then(res=>{
+             let {message, success} = res 
+             if(success){
+                console.log("success")
+                pageQuey()
+                messageApi.open({
+                  type: 'success',
+                  content: message,
+                });
+             }else{
+              messageApi.open({
+                type: 'error',
+                content: message,
+              });
+             }
+          
+          }).catch(err=>{
+            messageApi.open({
+              type: 'error',
+              content: err,
+            });
+          })
+  }
 
   return (
     <div
@@ -124,6 +149,7 @@ const UserManagement = () => {
         borderRadius: borderRadiusLG,
       }}
     >
+      {contextHolder}
       <Space direction='vertical' size={"middle"} style={{ display: 'flex' }}>
         <Row gutter={[10,]}>
           <Col span={5}>
