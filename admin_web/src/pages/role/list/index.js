@@ -1,20 +1,207 @@
-import React, { useState } from 'react';
-import {theme} from 'antd'
+import React, { useState, useEffect } from 'react';
+import { theme, Space, Table, Tag, Input, Button, Col, Row, Avatar, Pagination, Switch, message, Modal } from 'antd'
+import apiUrl from "../../../api/constUrl.js"
+import axios from "../../../api/service.js"
+import AssignMenuModal from '../../../components/Forms/RolePage/assign_menu_form.js';
+import AssignUserModal from '../../../components/Forms/RolePage/assign_user_form.js';
+import { SearchOutlined, UserAddOutlined, UserOutlined, DeleteOutlined, TeamOutlined ,MenuOutlined ,KeyOutlined  } from '@ant-design/icons';
 const RoleManagement = () => {
+  const [assignMenuForm, setassignRoleForm] =useState(false)
+  const [open, setOpen] = useState(false);
+  const [currentRoleId , setcurrentRoleId] =useState(0)
+
+
+  const [usePagination, setPagination] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+    total: 10
+  })
+  const [userFormState, setUserFormState] = useState(false)
+
+  const [assignUserForm, setAssignUserForm]  = useState(false)
+  const [useUserData, setUserData] = useState([])
+
+  const [searchValue, setSearchValue] = useState('')
+
+  const deleteRole = (roleId) => {
+    axios.delete(`${apiUrl.ROLE_URL}/${roleId}`).then(res => {
+      let { message:msg, success } = res
+      if (success) {
+       message.success(msg)
+      pageQuey()
+      } else {
+        message.error(msg)
+      }
+    }).catch(err=>{
+      message.error(err)
+    })
+  }
+
+
+  const showModal = (record) => {
+    console.log(record)
+    Modal.confirm({
+      title: 'Are you sure delete this Role?',
+      content: `${record.roleName}`, // 示例使用record的id
+      onOk() {
+        // 执行删除操作，可能需要使用record的某些数据
+        deleteRole(record.roleId)
+        
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+  const handleInputChange = (e) => {
+    setSearchValue(e.target.value)
+  }
+
+  const childrenHandleUserFormModel = (childstate) => {
+    setAssignUserForm(childstate)
+  }
+  const childrenHandleRoleFormModel = (childstate)=>{
+    setassignRoleForm(childstate)
+  }
+
+  const onSearchClick = () => {
+    pageQuey()
+  }
+
+  const pageQuey = () => {
+    let pageQuryUrl = `${apiUrl.ROLE_URL}/${usePagination.pageIndex}/${usePagination.pageSize}`
+    if (searchValue != null && searchValue.trim().length > 0) {
+      pageQuryUrl = pageQuryUrl + `/${searchValue}`
+    }
+
+    axios.get(pageQuryUrl).then(res => {
+      let { data, message, success } = res
+      console.log(data)
+      setUserData(data.dataList)
+      setPagination(usePagination => ({
+        ...usePagination,
+        total: data.recordCount,
+        pageIndex: data.pageIndex,
+        pageSize: data.pageSize
+      }))
+      console.log("@@")
+      console.log(usePagination.pageIndex)
+    })
+  }
+
+  const  openAssignUserForm=(roleId)=>{
+    setcurrentRoleId(roleId)
+    setAssignUserForm(true)
+    console.log(currentRoleId)
+  }
+  const openUserForm = () => {
+    setUserFormState(true)
+  }
+  const  openMenuForm =(roleId)=>{
+    setcurrentRoleId(roleId)
+    setassignRoleForm(true)
+  }
+    
+  
+
+  useEffect(() => {
+    pageQuey()
+  }, [usePagination.pageIndex, usePagination.pageSize])
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const columns = [
+    {
+      title: 'Role Name',
+      dataIndex: 'roleName',
+      key: 'roleName',
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      dataIndex: 'status',
+      render: (status, record) => {
+
+        var falg = status === 0 ? true : false
+        console.log(falg)
+        return <Switch checkedChildren="Active"
+          unCheckedChildren="Frozen"
+          checked={falg} tabIndex={1} onChange={() => { handleRoleStatusChange(record.roleId) }} size='large' />
+      }
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (record) => {
+        return <>
+        <Col span={15}>
+          <Space>
+          <Button   color='green' type='primary' icon={<KeyOutlined />}  onClick={()=>{ openMenuForm(record.roleId)}}>Authorization</Button>
+            <Button type="primary" icon={<UserAddOutlined /> }  onClick={()=>{ openAssignUserForm(record.roleId)}}>Assign Users</Button>
+            <Button icon={<DeleteOutlined />} danger type="primary" onClick={() => { showModal(record) }}>Delete</Button>
+          </Space>
+          </Col>
+        </>
+      }
+    },
+  ];
+
+  const handleRoleStatusChange = (roleId) => {
+    axios.put(`${apiUrl.ROLE_URL}/${roleId}`).then(res => {
+      let { message:msg, success } = res
+      if (success) {
+        pageQuey()
+        message.open(msg)
+      } else {
+        message.error(msg)
+      }
+    }).catch(err => {
+        message.error(err)
+    })
+  }
+
+
   return (
     <div
-    style={{
-      padding: 24,
-      minHeight: 360,
-      background: colorBgContainer,
-      borderRadius: borderRadiusLG,
-    }}
-  >
-   Role LIST
-  </div>
+      style={{
+        padding: 24,
+        minHeight: 360,
+        background: colorBgContainer,
+        borderRadius: borderRadiusLG,
+      }}
+    >
+      <Space direction='vertical' size={"middle"} style={{ display: 'flex' }}>
+        <Row gutter={[10,]}>
+          <Col span={5}>
+            <Input placeholder="Basic usage" value={searchValue} onChange={handleInputChange} />
+          </Col>
+          <Col span={1.5}>
+            <Button type="primary" icon={<SearchOutlined />} onClick={onSearchClick}>Search</Button>
+          </Col>
+          <Col span={1.5}>
+            <Button type="primary" icon={<UserAddOutlined />} onClick={openUserForm}>Add User</Button>
+          </Col>
+        </Row>
+        <Table   columns={columns} pagination={false} dataSource={useUserData} />
+        <Pagination
+          current={usePagination.pageIndex} // 使用当前页码
+          pageSize={usePagination.pageSize} // 每页显示条数
+          total={usePagination.total} // 总条目数
+          onChange={(page, pageSize) => {
+            // 更新分页状态，并重新查询数据
+            setPagination(prev => ({
+              ...prev,
+              pageIndex: page,
+              pageSize: pageSize,
+            }));
+          }}
+        />
+      </Space>
+      {assignUserForm == true ? <AssignUserModal  currentRoleId={currentRoleId} isModalOpen={childrenHandleUserFormModel} /> : null}
+      {assignMenuForm == true ? <AssignMenuModal  currentRoleId={currentRoleId}  isModalOpen={childrenHandleRoleFormModel}/> : null  }
+    </div>
   );
 };
 

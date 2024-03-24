@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Input, Switch, Row, Col, Select, Upload, message } from 'antd';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
-import axios from '../../api/service';
-import routes from "./../../api/constUrl"
+import axios from '../../../api/service';
+import routes from "../../../api/constUrl"
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
@@ -30,6 +30,7 @@ const UserInfoFormModal = ({ isModalOpen }) => {
     const addUser = (params) => {
         axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
             console.log(res.message)
+            message.success(res.message)
         }).catch(err => {
             console.log(err)
         })

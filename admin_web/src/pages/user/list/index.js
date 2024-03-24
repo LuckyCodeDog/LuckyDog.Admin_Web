@@ -1,15 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { theme, Space, Table, Tag, Input, Button, Col, Row, Avatar, Pagination, Switch,message } from 'antd'
+import { theme, Space, Table, Tag, Input, Button, Col, Row, Avatar, Pagination, Switch, message, Modal } from 'antd'
 import apiUrl from "../../../api/constUrl.js"
 import axios from "../../../api/service.js"
-import UserInfoForm from '../../../components/Forms/user_info_form.js';
-import { SearchOutlined, UserAddOutlined, UserOutlined,DeleteOutlined,TeamOutlined } from '@ant-design/icons';
+import UserInfoForm from '../../../components/Forms/UserPage/user_info_form.js';
+import AssignRolesModal from '../../../components/Forms/UserPage/assign_role_form.js';
+import { SearchOutlined, UserAddOutlined, UserOutlined, DeleteOutlined, TeamOutlined } from '@ant-design/icons';
 const UserManagement = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [assignRoleForm, setAssignRoleForm] =useState(false)
+  const [open, setOpen] = useState(false);
+  const [currentUserId , setCurrentUserId] =useState(0)
 
+  const deleteUser = (userId) => {
+    axios.delete(`${apiUrl.userInfo}/${userId}`).then(res => {
+      let { message, success } = res
+      if (success) {
+       messageApi.success(message)
+        
+      } else {
+        messageApi.error(message)
+      }
+    }).catch(err=>{
+      messageApi.error(err)
+    })
+  }
+  const showModal = (record) => {
+    console.log(record)
+    Modal.confirm({
+      title: 'Are you sure delete this User?',
+      content: `Name : ${record.name}`, // 示例使用record的id
+      onOk() {
+        // 执行删除操作，可能需要使用record的某些数据
+        deleteUser(record.userId)
+        
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  const hideModal = () => {
+    setOpen(false);
+  };
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 10
   })
   const [userFormState, setUserFormState] = useState(false)
@@ -21,8 +57,11 @@ const UserManagement = () => {
     setSearchValue(e.target.value)
   }
 
-  const childrenHandleModel = (chiillState) => {
+  const childrenHandleUserFormModel = (chiillState) => {
     setUserFormState(chiillState)
+  }
+  const childrenHandleRoleFormModel = (childstate)=>{
+    setAssignRoleForm(childstate)
   }
 
   const onSearchClick = () => {
@@ -31,7 +70,6 @@ const UserManagement = () => {
 
   const pageQuey = () => {
     let pageQuryUrl = `${apiUrl.userInfo}/${usePagination.pageIndex}/${usePagination.pageSize}`
-
     if (searchValue != null && searchValue.trim().length > 0) {
       pageQuryUrl = pageQuryUrl + `/${searchValue}`
     }
@@ -52,9 +90,14 @@ const UserManagement = () => {
   }
 
   const openUserForm = () => {
-    console.log("@")
     setUserFormState(true)
   }
+  const  openRoleForm =(userId)=>{
+    setCurrentUserId(userId)
+    setAssignRoleForm(true)
+  }
+    
+  
 
   useEffect(() => {
     pageQuey()
@@ -90,15 +133,26 @@ const UserManagement = () => {
       key: 'address',
     },
     {
+      title: 'Gender',
+      dataIndex: 'sex',
+      key: 'sex',
+      render: (sex) => {
+        var text = sex == 1 ? "Male" : "Female"
+        var color = sex == 1 ? "blue" : "red"
+        return <Tag color={color}> {text} </Tag>
+      }
+    },
+    {
       title: 'Status',
       key: 'status',
       dataIndex: 'status',
-      render: (status,record) => {
+      render: (status, record) => {
 
-        var falg =  status ===0?  true :false
-        return   <Switch checkedChildren="Active"
-        unCheckedChildren="Frozen"
-       defaultChecked={falg} tabIndex={1} onChange={()=>{ handleUserStatusChange(record.userId) } } size='large' />
+        var falg = status === 0 ? true : false
+        console.log(falg)
+        return <Switch checkedChildren="Active"
+          unCheckedChildren="Frozen"
+          checked={falg} tabIndex={1} onChange={() => { handleUserStatusChange(record.userId) }} size='large' />
       }
     },
     {
@@ -107,38 +161,39 @@ const UserManagement = () => {
       render: (record) => {
         return <>
           <Space>
-            <Button  type="primary" icon={<TeamOutlined />}>Assign Roles</Button>
-            <Button icon={<DeleteOutlined/>} danger  type="primary">Delete</Button>
+            <Button type="primary" icon={<TeamOutlined />}  onClick={()=>{ openRoleForm(record.userId)}}>Assign Roles</Button>
+            <Button icon={<DeleteOutlined />} danger type="primary" onClick={() => { showModal(record) }}>Delete</Button>
           </Space>
         </>
       }
     },
   ];
 
-  const handleUserStatusChange =(userId)=>{
-          axios.put(`${apiUrl.userInfo}/${userId}` ).then(res=>{
-             let {message, success} = res 
-             if(success){
-                console.log("success")
-                pageQuey()
-                messageApi.open({
-                  type: 'success',
-                  content: message,
-                });
-             }else{
-              messageApi.open({
-                type: 'error',
-                content: message,
-              });
-             }
-          
-          }).catch(err=>{
-            messageApi.open({
-              type: 'error',
-              content: err,
-            });
-          })
+  const handleUserStatusChange = (userId) => {
+    axios.put(`${apiUrl.userInfo}/${userId}`).then(res => {
+      let { message, success } = res
+      if (success) {
+        console.log("success")
+        pageQuey()
+        messageApi.open({
+          type: 'success',
+          content: message,
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: message,
+        });
+      }
+
+    }).catch(err => {
+      messageApi.open({
+        type: 'error',
+        content: err,
+      });
+    })
   }
+
 
   return (
     <div
@@ -177,7 +232,8 @@ const UserManagement = () => {
           }}
         />
       </Space>
-      {userFormState == true ? <UserInfoForm isModalOpen={childrenHandleModel} /> : null}
+      {userFormState == true ? <UserInfoForm isModalOpen={childrenHandleUserFormModel} /> : null}
+      {assignRoleForm == true ? <AssignRolesModal  currentUserId={currentUserId}  isModalOpen={childrenHandleRoleFormModel}/> : null  }
     </div>
   );
 };

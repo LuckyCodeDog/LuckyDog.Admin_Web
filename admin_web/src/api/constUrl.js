@@ -5,4 +5,7 @@ const avatarInfo = "/File/Download/"
 const baseURL =  "https://localhost:7055/api"
 const upload = "https://localhost:7055/api/File/UploadAvantar/"
 const DOWNLOAD= "https://localhost:7055/api/File/Download/"
-export default {userInfo, menuInfo ,roleInfo, avatarInfo, baseURL ,upload, DOWNLOAD}
+const HANDLE_ROLES_URL = "https://localhost:7055/api/User/HandleRoles/"
+const ROLE_URL = "https://localhost:7055/api/Role"
+const ROLE_ASSIGN_USER = "/AssignUsers"
+export default {userInfo, menuInfo ,roleInfo, avatarInfo, baseURL ,upload, DOWNLOAD, HANDLE_ROLES_URL, ROLE_URL,ROLE_ASSIGN_USER}

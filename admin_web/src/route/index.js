@@ -4,6 +4,7 @@ import Main from '../pages/main';
 import MenuManagement from '../pages/menu/list';
 import RoleManagement from '../pages/role/list';
 import UserManagement from '../pages/user/list';
+import Abc from '../components/Abc';
 const routes=() => {
   return (
     <BrowserRouter>
@@ -12,6 +13,7 @@ const routes=() => {
           <Route path="user" element={<UserManagement />} /> 
           <Route path="role" element={<RoleManagement />} /> 
           <Route path="menu" element={<MenuManagement/>} />
+          <Route path="ABC" element={<Abc/>} />
         </Route>
       </Routes>
     </BrowserRouter>
