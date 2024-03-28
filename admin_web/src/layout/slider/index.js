@@ -1,20 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, Link, } from 'react-router-dom';
 import {   message } from 'antd'
-import {
-  AppstoreOutlined,
-  ContainerOutlined,
-  DesktopOutlined,
-  ProfileOutlined,
-  UserOutlined ,
-  TeamOutlined,
-  MailOutlined,
-  BarsOutlined,
-  MenuFoldOutlined,
-  FileOutlined,
-  MenuUnfoldOutlined,
-  PieChartOutlined,
-} from '@ant-design/icons';
+import * as Icon from '@ant-design/icons';
 import service from '../../api/service';
 import constUrl from '../../api/constUrl';
 import { Button, Menu  } from 'antd';
@@ -28,26 +15,28 @@ function getItem(label, key, icon, to, children) {
   };
 }
 
-const items = [
-  getItem('UserManagement', '1', <UserOutlined />, '/user'),
-  getItem('RoleManagement', '2', <TeamOutlined />,'/role'),
-  getItem('MenuManagement', '3', <FileOutlined />,'menu'),
-];
 const Slider = () => {
   const [menus,setMenus] =useState([])
-
+  const queryMenu= ()=>{
+    service.get(`${constUrl.baseURL}${constUrl.menuInfo}`).then(res=>{
+      let {message:msg,data,ovalue,success} = res
+      if(success){
+        const mappedData = data.map(d => ({
+          label: <Link to={d.webUrl}>{d.menuText}</Link>,
+          key: d.id,
+          icon:  React.createElement(Icon[d.icon]),
+          children: d.children.length == 0? null: d.children
+      }));
+          setMenus(mappedData)                 
+      }else{
+          message.error(msg)
+      }
+  }).catch(err=>{
+     message.error(err)
+  })
+  }
   useEffect(()=>{
-      service.get(`${constUrl.baseURL}${constUrl.menuInfo}`).then(res=>{
-          let {message:msg,data,ovalue,success} = res
-          if(success){
-            console.log(data)
-              setMenus(data)                 
-          }else{
-              message.error(msg)
-          }
-      }).catch(err=>{
-         message.error(err)
-      })
+      queryMenu()
   },[]) 
   return (
     <div>
@@ -56,7 +45,7 @@ const Slider = () => {
       theme="dark" 
       defaultSelectedKeys={['1']} 
       mode="inline" 
-      items={items} 
+      items={menus} 
       />
 
     </div>
