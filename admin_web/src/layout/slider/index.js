@@ -19,7 +19,7 @@ const getMenus =(data)=>{
    return data.filter(d => d.menuText !== "File Management").map(d => ({
     label: <Link to={d.webUrl}>{d.menuText}</Link>,
     key: d.id,
-    icon:  d.icon==null? null: React.createElement(Icon[d.icon]),
+   icon:  d.icon==null||d.icon ==undefined? null: React.createElement(Icon[d.icon]),
     children: d.children.length == 0? null: getMenus(d.children)
 }));
 }
