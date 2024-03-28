@@ -8,4 +8,7 @@ const DOWNLOAD= "https://localhost:7055/api/File/Download/"
 const HANDLE_ROLES_URL = "https://localhost:7055/api/User/HandleRoles/"
 const ROLE_URL = "https://localhost:7055/api/Role"
 const ROLE_ASSIGN_USER = "/AssignUsers"
-export default {userInfo, menuInfo ,roleInfo, avatarInfo, baseURL ,upload, DOWNLOAD, HANDLE_ROLES_URL, ROLE_URL,ROLE_ASSIGN_USER}
+const SET_STATUS = "/SetStatus"
+const VIEW_MENUS = "/ViewMenus"
+const LOGIN_URL = "https://localhost:7265/auth/Account"
+export default {userInfo, menuInfo ,roleInfo, avatarInfo, baseURL ,upload, DOWNLOAD, HANDLE_ROLES_URL, ROLE_URL,ROLE_ASSIGN_USER, SET_STATUS,VIEW_MENUS, LOGIN_URL}

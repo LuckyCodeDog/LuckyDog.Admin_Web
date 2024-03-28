@@ -3,11 +3,12 @@ import { Modal, Button, Form, Row, Col, message,  Divider, Tree } from 'antd';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import axios from '../../../api/service';
 import routes from "../../../api/constUrl"
-const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
-    const [roleId, setroleId] = useState(currentRoleId)
+const ViewMenuModal = ({ isModalOpen, currentUserId }) => {
+    const [userId, setuserId] = useState(currentUserId)
     const [menus, setmenus] = useState([])
     const [checkedKeys , setCheckedKeys] = useState([])
     const [checkedForApi , setCheckedForApi] =useState([])
+    // Lst<string> menuIds, userId 
     const addUser = (params) => {
         axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
             message.success(res.message)
@@ -32,7 +33,7 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
       }
       
     const handleRoleMenus = (menus) => {
-        axios.post(`${routes.ROLE_URL}/${roleId}`, checkedForApi).then(res => {
+        axios.post(`${routes.ROLE_URL}/${userId}`, checkedForApi).then(res => {
             var { message: msg, success } = res
             if (success) {
                 message.success(msg)
@@ -50,8 +51,10 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
         let button = "【Button】:  ";
     
         selectTree.forEach(t => {
+            // Update title based on type
             t.title = t.type === 1 ? `${menu}${t.title}` : `${button}${t.title}`;
     
+            // Recursively apply to children if they exist
             if (t.children!=null) {
                 addDescriptionToTree(t.children);
             }
@@ -60,7 +63,8 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
 
 
     useEffect(() => {
-        axios.get(`${routes.ROLE_URL}/${roleId}`).then(res => {
+        console.log(userId)
+        axios.get(`${routes.userInfo}${routes.VIEW_MENUS}/${userId}`).then(res => {
             let { message: msg, data, success } = res
             if (success) {
                 addDescriptionToTree(data)
@@ -81,22 +85,11 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
     };
 
     const handleCancel = () => {
-        console.log(currentRoleId)
+        console.log(userId)
         isModalOpen(false)
     };
 
-
     const onCheck = ( values , info)=>{
-       console.log(info.checkedNodes)
-       var checkedNodes = info.checkedNodes.map(n=>{
-        return {
-            menuId:n.key,
-            type :n.type
-        };
-    })
-         setCheckedForApi(checkedNodes)   
-        console.log(checkedNodes)
-       setCheckedKeys(values) 
     }
 
     return (
@@ -116,12 +109,13 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
                     wrapperCol={{ span: 19 }}
                 >
                     <Tree
-                
+                        expandedKeys={checkedKeys}
                         checkStrictly
                         checkable
                         checkedKeys={checkedKeys}
                         treeData={menus}
                         onCheck={onCheck}
+                        defaultCheckedKeys={checkedKeys}
                     />
                 </Form>
             </Modal>
@@ -129,4 +123,4 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
     );
 };
 
-export default AssignMenuModal;
+export default ViewMenuModal;

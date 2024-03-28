@@ -40,7 +40,20 @@ const { CancelToken, isCancel } = axios;
 
 //定义一个全局的变量存储不同的url,避免同一页面有多个请求时拦截了正常的请求
   let pending = {};
+// 请求拦截器
+service.interceptors.request.use(
+  (config) => {
 
+    const url = config.url
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(new Error(error))
+  })
 //设置axios的响应拦截器
 service.interceptors.response.use(
   response => {

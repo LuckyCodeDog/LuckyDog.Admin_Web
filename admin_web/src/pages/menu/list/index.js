@@ -1,83 +1,96 @@
-import React, { useState } from 'react';
-import {theme,Space, Table, Tag,Input } from 'antd'
+import React, { useState, useEffect } from 'react';
+import {theme,Space, Table, Tag,Input , Button} from 'antd'
+import apiUrl from  "../../../api/constUrl"
+import axios from "../../../api/service"
+import { SearchOutlined, UserAddOutlined,PlusOutlined , UserOutlined, DeleteOutlined, TeamOutlined ,MenuOutlined ,KeyOutlined } from '@ant-design/icons';
+import IconComponent from '../../../components/icons/IconComponent';
 const MenuManagement = () => {
-
+  const [menuData, setMenuData] = useState([])
+  const [searchValue, setSearchValue] = useState('')
+  const [usePagination, setPagination] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+    total: 10
+  })
   const {Search } = Input
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text) => <a>{text}</a>,
+      title: 'Menu Name',
+      dataIndex: 'menuText',
+      key: 'menuText',
+      render: (menuText,record)=><>
+        <Space>
+        <IconComponent iconName={record.icon} />
+          <span>{menuText}</span>
+        </Space>
+     
+
+
+    
+
+      </>
+    },
+
+    {
+      title: 'Menu Type',
+      dataIndex: 'menuType',
+      key: 'menuType',
+      render: (menuType) => {
+        var text = menuType == 1 ? "Menu" : "Button"
+        var color = menuType == 1 ? "blue" : "red"
+        return <Tag color={color}> {text} </Tag>
+      }
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Vue File Path',
+      dataIndex: 'vueFilePath',
+      key: 'vueFilePath',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Web Url',
+      dataIndex: 'webUrl',
+      key: 'webUrl',
     },
-    {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
+
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a>Invite {record.name}</a>
-          <a>Delete</a>
+          <Button icon={<KeyOutlined/>} type='primary'>Assign Roles</Button>
+          {record.menuType == 1 ? <Button icon={<PlusOutlined/>} type='primary'>Add Menu</Button>: null}
+          {record.menuType == 1 ? <Button icon={<DeleteOutlined/>} danger type='primary'>Delete</Button>: null}
+
         </Space>
       ),
     },
   ];
-  const data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
-  ];
+  const pageQuey = () => {
+    let pageQuryUrl = `${apiUrl.menuInfo}/${usePagination.pageIndex}/${usePagination.pageSize}`
+    if (searchValue != null && searchValue.trim().length > 0) {
+      pageQuryUrl = pageQuryUrl + `/${searchValue}`
+    }
 
+    axios.get(pageQuryUrl).then(res => {
+      let { data, message, success } = res
+      console.log(data)
+      let datawithkey = data.dataList.map(row => { return {...row, key:row.id}})
+      setMenuData(datawithkey)
+      setPagination(usePagination => ({
+        ...usePagination,
+        total: data.recordCount,
+        pageIndex: data.pageIndex,
+        pageSize: data.pageSize
+      }))
+    })
+  }
+  useEffect(()=>{
+      pageQuey()
+  },[])
+  
   return (
     <div
     style={{
@@ -90,8 +103,11 @@ const MenuManagement = () => {
     <Space direction='vertical'  style={{display:'flex'}}>
     <Search placeholder="input search text" enterButton="Search" size="large"  style={{width:"30%"}}  />
 
-    <Table columns={columns} dataSource={data}  style={{marginTop:'50'}} />
-
+    <Table 
+    columns={columns}
+    dataSource={menuData}   
+    style={{marginTop:'50'}} 
+    />
     </Space>
 
   </div>

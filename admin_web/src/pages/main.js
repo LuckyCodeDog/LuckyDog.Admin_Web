@@ -11,8 +11,9 @@ import {
 } from '@ant-design/icons';
 import Headers from '../layout/header';
 import Slider from '../layout/slider';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Card } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
+
 
 const Main = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -24,7 +25,6 @@ const Main = () => {
   return (
     <Layout style={{minHeight: '100vh',}}>
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div className="demo-logo-vertical" />
         <Slider></Slider>
       </Sider>
       <Layout>

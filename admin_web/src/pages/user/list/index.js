@@ -4,23 +4,26 @@ import apiUrl from "../../../api/constUrl.js"
 import axios from "../../../api/service.js"
 import UserInfoForm from '../../../components/Forms/UserPage/user_info_form.js';
 import AssignRolesModal from '../../../components/Forms/UserPage/assign_role_form.js';
-import { SearchOutlined, UserAddOutlined, UserOutlined, DeleteOutlined, TeamOutlined } from '@ant-design/icons';
+import ViewMenuModal from '../../../components/Forms/UserPage/view_menus_form.js';
+import { SearchOutlined, UserAddOutlined, UserOutlined, DeleteOutlined, TeamOutlined,KeyOutlined  } from '@ant-design/icons';
 const UserManagement = () => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [assignRoleForm, setAssignRoleForm] =useState(false)
-  const [open, setOpen] = useState(false);
-  const [currentUserId , setCurrentUserId] =useState(0)
-
+  const [assignRoleForm, setAssignRoleForm] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState(0)
+  const [viewMnuesFormState, setViewMenusFormState] = useState(false)
+  const [userFormState, setUserFormState] = useState(false)
+  const [useUserData, setUserData] = useState([])
+  const [searchValue, setSearchValue] = useState('')
   const deleteUser = (userId) => {
     axios.delete(`${apiUrl.userInfo}/${userId}`).then(res => {
       let { message, success } = res
       if (success) {
-       messageApi.success(message)
-        
+        messageApi.success(message)
+
       } else {
         messageApi.error(message)
       }
-    }).catch(err=>{
+    }).catch(err => {
       messageApi.error(err)
     })
   }
@@ -32,26 +35,22 @@ const UserManagement = () => {
       onOk() {
         // 执行删除操作，可能需要使用record的某些数据
         deleteUser(record.userId)
-        
+
       },
       onCancel() {
         console.log('Cancel');
       },
     });
   };
-
-  const hideModal = () => {
-    setOpen(false);
-  };
+  const childrenHandleMnuesFormModel = (chiillState) => {
+    setViewMenusFormState(chiillState)
+  }
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 10,
     total: 10
   })
-  const [userFormState, setUserFormState] = useState(false)
-  const [useUserData, setUserData] = useState([])
 
-  const [searchValue, setSearchValue] = useState('')
 
   const handleInputChange = (e) => {
     setSearchValue(e.target.value)
@@ -60,7 +59,7 @@ const UserManagement = () => {
   const childrenHandleUserFormModel = (chiillState) => {
     setUserFormState(chiillState)
   }
-  const childrenHandleRoleFormModel = (childstate)=>{
+  const childrenHandleRoleFormModel = (childstate) => {
     setAssignRoleForm(childstate)
   }
 
@@ -92,12 +91,17 @@ const UserManagement = () => {
   const openUserForm = () => {
     setUserFormState(true)
   }
-  const  openRoleForm =(userId)=>{
+  const openRoleForm = (userId) => {
     setCurrentUserId(userId)
     setAssignRoleForm(true)
   }
-    
-  
+
+  const viewMenusForm = (userId) => {
+    setCurrentUserId(userId)
+    console.log("current id ", userId)
+    setViewMenusFormState(true)
+ 
+  }
 
   useEffect(() => {
     pageQuey()
@@ -161,8 +165,10 @@ const UserManagement = () => {
       render: (record) => {
         return <>
           <Space>
-            <Button type="primary" icon={<TeamOutlined />}  onClick={()=>{ openRoleForm(record.userId)}}>Assign Roles</Button>
+            <Button type="primary" icon={<TeamOutlined />} onClick={() => { openRoleForm(record.userId) }}>Assign Roles</Button>
+            <Button type="primary" icon={<KeyOutlined />} onClick={() => { viewMenusForm(record.userId) }}>view Permissions </Button>
             <Button icon={<DeleteOutlined />} danger type="primary" onClick={() => { showModal(record) }}>Delete</Button>
+
           </Space>
         </>
       }
@@ -208,7 +214,7 @@ const UserManagement = () => {
       <Space direction='vertical' size={"middle"} style={{ display: 'flex' }}>
         <Row gutter={[10,]}>
           <Col span={5}>
-            <Input placeholder="Basic usage" value={searchValue} onChange={handleInputChange} />
+            <Input placeholder="Input User Name" value={searchValue} onChange={handleInputChange} />
           </Col>
           <Col span={1.5}>
             <Button type="primary" icon={<SearchOutlined />} onClick={onSearchClick}>Search</Button>
@@ -232,8 +238,9 @@ const UserManagement = () => {
           }}
         />
       </Space>
+      {viewMnuesFormState == true ? <ViewMenuModal currentUserId={currentUserId}  isModalOpen={childrenHandleMnuesFormModel} /> : null}
       {userFormState == true ? <UserInfoForm isModalOpen={childrenHandleUserFormModel} /> : null}
-      {assignRoleForm == true ? <AssignRolesModal  currentUserId={currentUserId}  isModalOpen={childrenHandleRoleFormModel}/> : null  }
+      {assignRoleForm == true ? <AssignRolesModal currentUserId={currentUserId} isModalOpen={childrenHandleRoleFormModel} /> : null}
     </div>
   );
 };

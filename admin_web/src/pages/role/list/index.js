@@ -4,12 +4,13 @@ import apiUrl from "../../../api/constUrl.js"
 import axios from "../../../api/service.js"
 import AssignMenuModal from '../../../components/Forms/RolePage/assign_menu_form.js';
 import AssignUserModal from '../../../components/Forms/RolePage/assign_user_form.js';
+import AddRoleModal from '../../../components/Forms/RolePage/add_role_form.js';
 import { SearchOutlined, UserAddOutlined, UserOutlined, DeleteOutlined, TeamOutlined ,MenuOutlined ,KeyOutlined  } from '@ant-design/icons';
 const RoleManagement = () => {
   const [assignMenuForm, setassignRoleForm] =useState(false)
   const [open, setOpen] = useState(false);
   const [currentRoleId , setcurrentRoleId] =useState(0)
-
+  const [addRoleForm, setAddRoleForm] = useState(false)
 
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
@@ -63,7 +64,9 @@ const RoleManagement = () => {
   const childrenHandleRoleFormModel = (childstate)=>{
     setassignRoleForm(childstate)
   }
-
+  const childrenHandleAddRoleForm =(childstate)=>{
+    setAddRoleForm(childstate)
+  }
   const onSearchClick = () => {
     pageQuey()
   }
@@ -84,8 +87,6 @@ const RoleManagement = () => {
         pageIndex: data.pageIndex,
         pageSize: data.pageSize
       }))
-      console.log("@@")
-      console.log(usePagination.pageIndex)
     })
   }
 
@@ -94,8 +95,8 @@ const RoleManagement = () => {
     setAssignUserForm(true)
     console.log(currentRoleId)
   }
-  const openUserForm = () => {
-    setUserFormState(true)
+  const openAddRoleForm = () => {
+   setAddRoleForm(true)
   }
   const  openMenuForm =(roleId)=>{
     setcurrentRoleId(roleId)
@@ -149,11 +150,12 @@ const RoleManagement = () => {
   ];
 
   const handleRoleStatusChange = (roleId) => {
-    axios.put(`${apiUrl.ROLE_URL}/${roleId}`).then(res => {
+    axios.patch(`${apiUrl.ROLE_URL}${apiUrl.SET_STATUS}/${roleId}`).then(res => {
       let { message:msg, success } = res
       if (success) {
+        console.log(msg)
+        message.success(msg)
         pageQuey()
-        message.open(msg)
       } else {
         message.error(msg)
       }
@@ -175,13 +177,13 @@ const RoleManagement = () => {
       <Space direction='vertical' size={"middle"} style={{ display: 'flex' }}>
         <Row gutter={[10,]}>
           <Col span={5}>
-            <Input placeholder="Basic usage" value={searchValue} onChange={handleInputChange} />
+            <Input placeholder="Input User Name" value={searchValue} onChange={handleInputChange} />
           </Col>
           <Col span={1.5}>
             <Button type="primary" icon={<SearchOutlined />} onClick={onSearchClick}>Search</Button>
           </Col>
           <Col span={1.5}>
-            <Button type="primary" icon={<UserAddOutlined />} onClick={openUserForm}>Add User</Button>
+            <Button type="primary" icon={<UserAddOutlined />} onClick={openAddRoleForm}>Add Role</Button>
           </Col>
         </Row>
         <Table   columns={columns} pagination={false} dataSource={useUserData} />
@@ -199,8 +201,9 @@ const RoleManagement = () => {
           }}
         />
       </Space>
-      {assignUserForm == true ? <AssignUserModal  currentRoleId={currentRoleId} isModalOpen={childrenHandleUserFormModel} /> : null}
+      {assignUserForm == true ? <AssignUserModal   currentRoleId={currentRoleId} isModalOpen={childrenHandleUserFormModel} /> : null}
       {assignMenuForm == true ? <AssignMenuModal  currentRoleId={currentRoleId}  isModalOpen={childrenHandleRoleFormModel}/> : null  }
+      {addRoleForm == true? <AddRoleModal   refreshPage = {pageQuey}  isModalOpen={childrenHandleAddRoleForm} /> :null}
     </div>
   );
 };
