@@ -15,18 +15,22 @@ function getItem(label, key, icon, to, children) {
   };
 }
 
+const getMenus =(data)=>{
+   return data.filter(d => d.menuText !== "File Management").map(d => ({
+    label: <Link to={d.webUrl}>{d.menuText}</Link>,
+    key: d.id,
+    icon:  d.icon==null? null: React.createElement(Icon[d.icon]),
+    children: d.children.length == 0? null: getMenus(d.children)
+}));
+}
+
 const Slider = () => {
   const [menus,setMenus] =useState([])
   const queryMenu= ()=>{
     service.get(`${constUrl.baseURL}${constUrl.menuInfo}`).then(res=>{
       let {message:msg,data,ovalue,success} = res
       if(success){
-        const mappedData = data.map(d => ({
-          label: <Link to={d.webUrl}>{d.menuText}</Link>,
-          key: d.id,
-          icon:  React.createElement(Icon[d.icon]),
-          children: d.children.length == 0? null: d.children
-      }));
+        const mappedData = getMenus(data)
           setMenus(mappedData)                 
       }else{
           message.error(msg)
