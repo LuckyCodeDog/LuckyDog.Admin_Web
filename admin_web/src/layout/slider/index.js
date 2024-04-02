@@ -30,7 +30,7 @@ const Slider = () => {
     service.get(`${constUrl.baseURL}${constUrl.menuInfo}`).then(res=>{
       let {message:msg,data,ovalue,success} = res
       if(success){
-        const mappedData = getMenus(data)
+        const mappedData = data== undefined? []: getMenus(data)
           setMenus(mappedData)                 
       }else{
           message.error(msg)

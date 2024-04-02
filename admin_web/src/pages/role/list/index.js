@@ -56,16 +56,25 @@ const RoleManagement = () => {
   };
   const handleInputChange = (e) => {
     setSearchValue(e.target.value)
+    pageQuey()
   }
 
   const childrenHandleUserFormModel = (childstate) => {
+
     setAssignUserForm(childstate)
+    pageQuey()
   }
   const childrenHandleRoleFormModel = (childstate)=>{
+  
     setassignRoleForm(childstate)
+    pageQuey()
+ 
   }
   const childrenHandleAddRoleForm =(childstate)=>{
+   
     setAddRoleForm(childstate)
+    pageQuey()
+  
   }
   const onSearchClick = () => {
     pageQuey()

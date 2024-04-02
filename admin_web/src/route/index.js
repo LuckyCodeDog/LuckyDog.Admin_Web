@@ -11,6 +11,7 @@ const isAuthenticated = () => {
   if (token != null && token.length > 0) {
     return true
   } else {
+    console.log(token)
     return false
   }
 };

@@ -168,7 +168,7 @@ const UserInfoFormModal = ({ isModalOpen }) => {
                         <Input placeholder="Enter your WeChat ID" />
                     </Form.Item>
                     <Form.Item
-                        name="gender"
+                        name="sex"
                         label="Gender:"
                         rules={[{ required: true, message: 'Please select your gender!' }]}
                     >

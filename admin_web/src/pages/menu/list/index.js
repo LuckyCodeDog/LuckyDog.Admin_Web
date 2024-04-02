@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import {theme,Space, Table, Tag,Input , Button} from 'antd'
+import {theme,Space, Table, Tag,Input , Button, Modal} from 'antd'
 import apiUrl from  "../../../api/constUrl"
+import AssignRolesModal from '../../../components/Forms/MenuPage/assign_role_form';
 import axios from "../../../api/service"
 import { SearchOutlined, UserAddOutlined,PlusOutlined , UserOutlined, DeleteOutlined, TeamOutlined ,MenuOutlined ,KeyOutlined } from '@ant-design/icons';
 import IconComponent from '../../../components/icons/IconComponent';
 const MenuManagement = () => {
   const [menuData, setMenuData] = useState([])
   const [searchValue, setSearchValue] = useState('')
+  const [currentMenuId, setCurrentMenuId]= useState(null)
+  const [assignRoleForm,setAssignRoleForm] = useState(false)
+  const [currentMenuType, setCurrentMenuType] = useState(null)
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 10,
@@ -26,10 +30,6 @@ const MenuManagement = () => {
         <IconComponent iconName={record.icon} />
           <span>{menuText}</span>
         </Space>
-     
-
-
-    
 
       </>
     },
@@ -60,24 +60,27 @@ const MenuManagement = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button icon={<KeyOutlined/>} type='primary'>Assign Roles</Button>
+          <Button icon={<KeyOutlined/>} onClick={()=>{openRoleForm(record)}} type='primary'>Assign Roles</Button>
           {record.menuType == 1 ? <Button icon={<PlusOutlined/>} type='primary'>Add Menu</Button>: null}
-          {record.menuType == 1 ? <Button icon={<DeleteOutlined/>} danger type='primary'>Delete</Button>: null}
+          {record.menuType == 1 ? <Button icon={<DeleteOutlined/>} danger type='primary' onClick={()=>{showModal(record)}}>Delete</Button>: null}
 
         </Space>
       ),
     },
   ];
+
+ const  assignRoles = ()=>{
+
+ }
   const pageQuey = () => {
     let pageQuryUrl = `${apiUrl.menuInfo}/${usePagination.pageIndex}/${usePagination.pageSize}`
     if (searchValue != null && searchValue.trim().length > 0) {
       pageQuryUrl = pageQuryUrl + `/${searchValue}`
     }
-
     axios.get(pageQuryUrl).then(res => {
       let { data, message, success } = res
       console.log(data)
-      let datawithkey = data.dataList.map(row => { return {...row, key:row.id}})
+      let datawithkey = data.dataList==undefined? [] : data.dataList.map(row => { return {...row, key:row.id}})
       setMenuData(datawithkey)
       setPagination(usePagination => ({
         ...usePagination,
@@ -90,7 +93,36 @@ const MenuManagement = () => {
   useEffect(()=>{
       pageQuey()
   },[])
-  
+
+  const childrenHandleRoleFormModel = (childstate) => {
+    setAssignRoleForm(childstate)
+    pageQuey()
+  }
+
+  const openRoleForm = (record) => {
+    console.log("passvalue ", record)
+    setCurrentMenuId(record.id)
+    setCurrentMenuType(record.menuType)
+    setAssignRoleForm(true)
+
+  };
+  const showModal = (record) => {
+    console.log(record)
+    Modal.confirm({
+      title: 'Are you sure delete this Role?',
+      content: `${record.menuText}`,
+      onOk() {
+      deleteMenu(record.id)
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  const deleteMenu  = (menuId) =>{
+      axios.delete(`${apiUrl.Menus_URL}`,menuId)
+  }
   return (
     <div
     style={{
@@ -109,7 +141,7 @@ const MenuManagement = () => {
     style={{marginTop:'50'}} 
     />
     </Space>
-
+    {assignRoleForm == true ? <AssignRolesModal currentMenuId={currentMenuId} currentMenuType={currentMenuType} isModalOpen={childrenHandleRoleFormModel} /> : null}
   </div>
   );
 };

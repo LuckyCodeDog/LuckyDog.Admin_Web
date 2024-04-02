@@ -44,6 +44,7 @@ const UserManagement = () => {
   };
   const childrenHandleMnuesFormModel = (chiillState) => {
     setViewMenusFormState(chiillState)
+    pageQuery()
   }
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
@@ -58,16 +59,18 @@ const UserManagement = () => {
 
   const childrenHandleUserFormModel = (chiillState) => {
     setUserFormState(chiillState)
+    pageQuery()
   }
   const childrenHandleRoleFormModel = (childstate) => {
     setAssignRoleForm(childstate)
+    pageQuery()
   }
 
   const onSearchClick = () => {
-    pageQuey()
+    pageQuery()
   }
 
-  const pageQuey = () => {
+  const pageQuery = () => {
     let pageQuryUrl = `${apiUrl.userInfo}/${usePagination.pageIndex}/${usePagination.pageSize}`
     if (searchValue != null && searchValue.trim().length > 0) {
       pageQuryUrl = pageQuryUrl + `/${searchValue}`
@@ -104,7 +107,7 @@ const UserManagement = () => {
   }
 
   useEffect(() => {
-    pageQuey()
+    pageQuery()
   }, [usePagination.pageIndex, usePagination.pageSize])
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -180,7 +183,7 @@ const UserManagement = () => {
       let { message, success } = res
       if (success) {
         console.log("success")
-        pageQuey()
+        pageQuery()
         messageApi.open({
           type: 'success',
           content: message,
