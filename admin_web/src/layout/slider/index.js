@@ -19,7 +19,7 @@ const getMenus =(data)=>{
    return data.filter(d => d.menuText !== "File Management").map(d => ({
     label: <Link to={d.webUrl}>{d.menuText}</Link>,
     key: d.id,
-   icon:  d.icon==null||d.icon ==undefined? null: React.createElement(Icon[d.icon]),
+   icon:  d.icon==null||undefined? null: React.createElement(Icon[d.icon]),
     children: d.children.length == 0? null: getMenus(d.children)
 }));
 }
@@ -30,7 +30,7 @@ const Slider = () => {
     service.get(`${constUrl.baseURL}${constUrl.menuInfo}`).then(res=>{
       let {message:msg,data,ovalue,success} = res
       if(success){
-        const mappedData = data== undefined? []: getMenus(data)
+        const mappedData = data== undefined || null ? []: getMenus(data)
           setMenus(mappedData)                 
       }else{
           message.error(msg)

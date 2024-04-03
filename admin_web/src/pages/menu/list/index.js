@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {theme,Space, Table, Tag,Input , Button, Modal} from 'antd'
+import {theme,Space, Table, Tag,Input , Button, Modal, message,Row ,Col} from 'antd'
 import apiUrl from  "../../../api/constUrl"
 import AssignRolesModal from '../../../components/Forms/MenuPage/assign_role_form';
+import AddMenuForm from '../../../components/Forms/MenuPage/add_menu_form';
 import axios from "../../../api/service"
 import { SearchOutlined, UserAddOutlined,PlusOutlined , UserOutlined, DeleteOutlined, TeamOutlined ,MenuOutlined ,KeyOutlined } from '@ant-design/icons';
 import IconComponent from '../../../components/icons/IconComponent';
@@ -10,6 +11,7 @@ const MenuManagement = () => {
   const [searchValue, setSearchValue] = useState('')
   const [currentMenuId, setCurrentMenuId]= useState(null)
   const [assignRoleForm,setAssignRoleForm] = useState(false)
+  const [addMenuForm,  setAddMenuForm] = useState(false)
   const [currentMenuType, setCurrentMenuType] = useState(null)
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
@@ -35,7 +37,7 @@ const MenuManagement = () => {
     },
 
     {
-      title: 'Menu Type',
+      title: 'Type',
       dataIndex: 'menuType',
       key: 'menuType',
       render: (menuType) => {
@@ -43,11 +45,6 @@ const MenuManagement = () => {
         var color = menuType == 1 ? "blue" : "red"
         return <Tag color={color}> {text} </Tag>
       }
-    },
-    {
-      title: 'Vue File Path',
-      dataIndex: 'vueFilePath',
-      key: 'vueFilePath',
     },
     {
       title: 'Web Url',
@@ -61,7 +58,6 @@ const MenuManagement = () => {
       render: (_, record) => (
         <Space size="middle">
           <Button icon={<KeyOutlined/>} onClick={()=>{openRoleForm(record)}} type='primary'>Assign Roles</Button>
-          {record.menuType == 1 ? <Button icon={<PlusOutlined/>} type='primary'>Add Menu</Button>: null}
           {record.menuType == 1 ? <Button icon={<DeleteOutlined/>} danger type='primary' onClick={()=>{showModal(record)}}>Delete</Button>: null}
 
         </Space>
@@ -79,7 +75,6 @@ const MenuManagement = () => {
     }
     axios.get(pageQuryUrl).then(res => {
       let { data, message, success } = res
-      console.log(data)
       let datawithkey = data.dataList==undefined? [] : data.dataList.map(row => { return {...row, key:row.id}})
       setMenuData(datawithkey)
       setPagination(usePagination => ({
@@ -100,14 +95,20 @@ const MenuManagement = () => {
   }
 
   const openRoleForm = (record) => {
-    console.log("passvalue ", record)
     setCurrentMenuId(record.id)
     setCurrentMenuType(record.menuType)
     setAssignRoleForm(true)
 
   };
+
+  const childrenHandleAddMenuFormModel = (childstate) => {
+    setAddMenuForm(childstate)
+    pageQuey()
+  }
+  const openMenuForm = ()=>{
+      setAddMenuForm(true)
+  }
   const showModal = (record) => {
-    console.log(record)
     Modal.confirm({
       title: 'Are you sure delete this Role?',
       content: `${record.menuText}`,
@@ -115,13 +116,20 @@ const MenuManagement = () => {
       deleteMenu(record.id)
       },
       onCancel() {
-        console.log('Cancel');
       },
     });
   };
 
   const deleteMenu  = (menuId) =>{
-      axios.delete(`${apiUrl.Menus_URL}`,menuId)
+      axios.delete(`${apiUrl.Menus_URL}/${menuId}`)
+      .then(res=>{
+          let {message:msg , data , success } = res
+          if(success){
+             message.info(msg)
+          }else{
+            message.error(msg)
+          }
+      } )
   }
   return (
     <div
@@ -133,8 +141,11 @@ const MenuManagement = () => {
     }}
   >
     <Space direction='vertical'  style={{display:'flex'}}>
-    <Search placeholder="input search text" enterButton="Search" size="large"  style={{width:"30%"}}  />
-
+    <Row gutter={[10,]}>
+          <Col span={1.5}>
+            <Button type="primary" icon={<UserAddOutlined />} onClick={openMenuForm}>Add Menu</Button>
+          </Col>
+    </Row>
     <Table 
     columns={columns}
     dataSource={menuData}   
@@ -142,6 +153,7 @@ const MenuManagement = () => {
     />
     </Space>
     {assignRoleForm == true ? <AssignRolesModal currentMenuId={currentMenuId} currentMenuType={currentMenuType} isModalOpen={childrenHandleRoleFormModel} /> : null}
+    {addMenuForm == true ? <AddMenuForm  isModalOpen ={childrenHandleAddMenuFormModel }></AddMenuForm>: null}
   </div>
   );
 };

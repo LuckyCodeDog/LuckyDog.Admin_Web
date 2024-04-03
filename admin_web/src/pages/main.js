@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import Headers from '../layout/header';
 import Slider from '../layout/slider';
-import { Breadcrumb, Layout, Menu, theme, Card } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Card, Image } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
 
@@ -36,12 +36,11 @@ const Main = () => {
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
           </Breadcrumb>
-
           {/* set  route out let here */}
           <Outlet></Outlet>
         </Content>
         <Footer style={{textAlign: 'center',}}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+         Lucky Dog Admin ©{new Date().getFullYear()} Created by Han Qin
         </Footer>
       </Layout>
     </Layout>

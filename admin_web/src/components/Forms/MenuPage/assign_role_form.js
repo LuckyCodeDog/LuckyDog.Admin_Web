@@ -8,11 +8,13 @@ const AssignRolesModal = ({ isModalOpen, currentMenuId, currentMenuType }) => {
     const [menuId, setmenuId] = useState(currentMenuId)
     const [menuType, setMenuType] = useState(currentMenuType)
     const [roles, setRoles] = useState([])
+
     const [rolesForApi, setRolesForApi] = useState({
         menuId,
         menuType,
         roleId: []
     })
+    
     const addUser = (params) => {
         axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
             message.success(res.message)
