@@ -11,21 +11,17 @@ const RoleManagement = () => {
   const [open, setOpen] = useState(false);
   const [currentRoleId , setcurrentRoleId] =useState(0)
   const [addRoleForm, setAddRoleForm] = useState(false)
-
   const [usePagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 10,
     total: 10
   })
   const [userFormState, setUserFormState] = useState(false)
-
   const [assignUserForm, setAssignUserForm]  = useState(false)
   const [useUserData, setUserData] = useState([])
-
   const [searchValue, setSearchValue] = useState('')
-
   const deleteRole = (roleId) => {
-    axios.delete(`${apiUrl.ROLE_URL}/${roleId}`).then(res => {
+    axios.delete(`${apiUrl.roleInfo}/${roleId}`).then(res => {
       let { message:msg, success } = res
       if (success) {
        message.success(msg)
@@ -40,7 +36,7 @@ const RoleManagement = () => {
 
 
   const showModal = (record) => {
-    console.log(record)
+    
     Modal.confirm({
       title: 'Are you sure delete this Role?',
       content: `${record.roleName}`, // 示例使用record的id
@@ -50,7 +46,6 @@ const RoleManagement = () => {
         
       },
       onCancel() {
-        console.log('Cancel');
       },
     });
   };
@@ -81,14 +76,13 @@ const RoleManagement = () => {
   }
 
   const pageQuey = () => {
-    let pageQuryUrl = `${apiUrl.ROLE_URL}/${usePagination.pageIndex}/${usePagination.pageSize}`
+    let pageQuryUrl = `${apiUrl.roleInfo}/${usePagination.pageIndex}/${usePagination.pageSize}`
     if (searchValue != null && searchValue.trim().length > 0) {
       pageQuryUrl = pageQuryUrl + `/${searchValue}`
     }
 
     axios.get(pageQuryUrl).then(res => {
       let { data, message, success } = res
-      console.log(data)
       setUserData(data.dataList)
       setPagination(usePagination => ({
         ...usePagination,
@@ -102,7 +96,6 @@ const RoleManagement = () => {
   const  openAssignUserForm=(roleId)=>{
     setcurrentRoleId(roleId)
     setAssignUserForm(true)
-    console.log(currentRoleId)
   }
   const openAddRoleForm = () => {
    setAddRoleForm(true)
@@ -134,11 +127,14 @@ const RoleManagement = () => {
       dataIndex: 'status',
       render: (status, record) => {
 
-        var falg = status === 0 ? true : false
-        console.log(falg)
+        var flag = false
+        if(status!=undefined && status!==null)
+        {
+           flag = status === 0 ? true : false
+        }
         return <Switch checkedChildren="Active"
           unCheckedChildren="Frozen"
-          checked={falg} tabIndex={1} onChange={() => { handleRoleStatusChange(record.roleId) }} size='large' />
+          checked={flag} tabIndex={1} onChange={() => { handleRoleStatusChange(record.roleId) }} size='large' />
       }
     },
     {
@@ -159,10 +155,9 @@ const RoleManagement = () => {
   ];
 
   const handleRoleStatusChange = (roleId) => {
-    axios.patch(`${apiUrl.ROLE_URL}${apiUrl.SET_STATUS}/${roleId}`).then(res => {
+    axios.patch(`${apiUrl.roleInfo}${apiUrl.SET_STATUS}/${roleId}`).then(res => {
       let { message:msg, success } = res
       if (success) {
-        console.log(msg)
         message.success(msg)
         pageQuey()
       } else {

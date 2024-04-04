@@ -5,20 +5,21 @@ import './Login.css'
 import constUrl from '../../api/constUrl';
 import service from '../../api/service';
 import { useNavigate } from 'react-router-dom';
-export default function Login(props) {
+export default function Login({loginsuccess}) {
     let navigate = useNavigate();
     const onFinish = (values) => {
-        console.log(values)
         service.post(`${constUrl.LOGIN_URL} `, values).then(res=>{
             let {message:msg, oValue, success , data} =res
             if(success){
-                console.log(data)
-                console.log(message)
                 localStorage.setItem("token",oValue.accesstoken)
                 localStorage.setItem("userId",data.userId)
                 localStorage.setItem("userName",data.userName)
                 localStorage.setItem("imageurl",data.imageurl)
-                navigate("/")
+                localStorage.setItem("isLogin", "true")
+                console.log("nav cur")
+                loginsuccess(true)
+                message.success("Login Successful, Welcome: "+data.userName)
+                navigate("/home")
             }else{
                 message.error(msg)
             }
@@ -40,7 +41,7 @@ export default function Login(props) {
                         name="username"
                         rules={[{ required: true, message: 'Please input your Username!' }]}
                     >
-                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Email" />
                     </Form.Item>
                     <Form.Item
                         name="password"
@@ -54,8 +55,8 @@ export default function Login(props) {
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit" className="login-form-button">
-                            登录
-                     </Button>
+                            Login
+                        </Button>
                     </Form.Item>
                 </Form>
             </div>

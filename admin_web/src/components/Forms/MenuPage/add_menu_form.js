@@ -49,7 +49,6 @@ const AddMenuForm = ({ isModalOpen }) => {
                 
             })
             .catch((info) => {
-                console.log('Validate Failed:', info);
             });
     };
 

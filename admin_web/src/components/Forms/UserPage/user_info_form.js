@@ -28,11 +28,11 @@ const UserInfoFormModal = ({ isModalOpen }) => {
 
     const [fullImageUrl, setFullImageUrl] = useState("")
     const addUser = (params) => {
-        axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
-            console.log(res.message)
+        axios.post(`${routes.userInfo}`, params).then(res => {
+       
             message.success(res.message)
         }).catch(err => {
-            console.log(err)
+            message.error(err)
         })
     }
 
@@ -40,10 +40,9 @@ const UserInfoFormModal = ({ isModalOpen }) => {
         form
             .validateFields()
             .then((values) => {
-                console.log('Received values of form: ', values);
+
                 values.imageUrl = imageUrl
                 values.status = values.status === true ? 0 : 1
-                console.log(values)
                 addUser(values)
                 isModalOpen(false)
             })

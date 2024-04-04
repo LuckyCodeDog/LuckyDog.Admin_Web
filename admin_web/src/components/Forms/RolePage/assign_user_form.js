@@ -18,17 +18,16 @@ const AssignUserModal = ({ isModalOpen, currentRoleId }) => {
     })
 
     const onSearchClick = () => {
-        let pageQuryUrl = `${routes.baseURL}${routes.roleInfo}/${roleId}/${usePagination.pageIndex}/${usePagination.pageSize}`
+        let pageQuryUrl = `${routes.roleInfo}/${roleId}/${usePagination.pageIndex}/${usePagination.pageSize}`
         if (searchValue != null && searchValue.trim().length > 0) {
             pageQuryUrl = pageQuryUrl + `/${searchValue}`
         }
 
         axios.get(pageQuryUrl).then(res => {
             let { data, message, success, oValue } = res
-            console.log(data)
+  
             let finalData = data.dataList.map(d => { return { ...d, key: d.userId } })
             setUserData(finalData)
-            console.log(data.oValue)
             if (count == 0) {
                 setSelectedUserId(oValue)
             }
@@ -47,17 +46,17 @@ const AssignUserModal = ({ isModalOpen, currentRoleId }) => {
     }, [usePagination.pageIndex, usePagination.pageSize])
 
     const pageQuey = () => {
-        let pageQuryUrl = `${routes.baseURL}${routes.roleInfo}/${roleId}/${usePagination.pageIndex}/${usePagination.pageSize}`
+        let pageQuryUrl = `${routes.roleInfo}/${roleId}/${usePagination.pageIndex}/${usePagination.pageSize}`
         if (searchValue != null && searchValue.trim().length > 0) {
             pageQuryUrl = pageQuryUrl + `/${searchValue}`
         }
 
         axios.get(pageQuryUrl).then(res => {
             let { data, message, success, oValue } = res
-            console.log(data)
+  
             let finalData = data.dataList.map(d => { return { ...d, key: d.userId } })
             setUserData(finalData)
-            console.log(data.oValue)
+      
             if (count == 0) {
                 setSelectedUserId(oValue)
             }
@@ -76,22 +75,18 @@ const AssignUserModal = ({ isModalOpen, currentRoleId }) => {
         // ture add into  all seleted user ids 
         //false remove rom all seleted user id 
         let keyToHandle = record.userId
-        console.log(keyToHandle)
+
         if (selected) {
 
             setSelectedUserId([...selectedUserId, keyToHandle])
         } else {
             setSelectedUserId(selectedUserId.filter(id => id != keyToHandle))
         }
-        console.log(selected)
     }
 
     const setUsers = () => {
-        axios.post(`${routes.baseURL}${routes.roleInfo}${routes.ROLE_ASSIGN_USER}/${roleId}`, selectedUserId).then(res => {
+        axios.post(`${routes.roleInfo}${routes.ROLE_ASSIGN_USER}/${roleId}`, selectedUserId).then(res => {
             let { message: msg, success } = res
-            console.log(res)
-            console.log(success)
-            console.log(msg)
             if (success) {
                 message.success(msg)
             } else {
@@ -108,7 +103,6 @@ const AssignUserModal = ({ isModalOpen, currentRoleId }) => {
     };
 
     const handleCancel = () => {
-        console.log(currentRoleId)
         isModalOpen(false)
     };
     const handleInputChange = (e) => {

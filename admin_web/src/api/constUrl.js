@@ -12,7 +12,9 @@ const SET_STATUS = "/SetStatus"
 const VIEW_MENUS = "/ViewMenus"
 const Menus_URL ="/Menu"
 const VIEW_ROLES_URL = "/ViewRoles"
-const LOGIN_URL = "https://localhost:7265/auth/Account"
+const DEV_LOGIN = 'https://localhost:7265/auth/Account'
+const PRO_LOGIN = 'https://20.70.176.171:7000/auth/Account'
+const LOGIN_URL = 'https://localhost:7265/auth/Account'
 export default {
     userInfo, 
     menuInfo ,

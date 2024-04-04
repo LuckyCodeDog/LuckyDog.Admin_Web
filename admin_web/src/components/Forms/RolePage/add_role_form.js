@@ -14,7 +14,7 @@ const AddRoleModal = ({ isModalOpen, currentRoleId,refreshPage }) => {
         axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
             message.success(res.message)
         }).catch(err => {
-            console.log(err)
+            message.error(err)
         })
     }
 
@@ -22,9 +22,7 @@ const AddRoleModal = ({ isModalOpen, currentRoleId,refreshPage }) => {
         try {
             // 手动触发表单校验
             const values = await form.validateFields();
-            
             values.status =  values.status == true? 0 : 1
-            console.log('Success:', values);
             axios.post(`${routes.ROLE_URL}`,values).then(res=>{
                 let {message:msg,success} = res
                 if(success){
@@ -42,7 +40,6 @@ const AddRoleModal = ({ isModalOpen, currentRoleId,refreshPage }) => {
         }
     }
     const handleCancel = () => {
-        console.log(currentRoleId)
         isModalOpen(false)
     };
 

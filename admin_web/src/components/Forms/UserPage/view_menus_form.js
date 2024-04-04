@@ -9,13 +9,6 @@ const ViewMenuModal = ({ isModalOpen, currentUserId }) => {
     const [checkedKeys , setCheckedKeys] = useState([])
     const [checkedForApi , setCheckedForApi] =useState([])
     // Lst<string> menuIds, userId 
-    const addUser = (params) => {
-        axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
-            message.success(res.message)
-        }).catch(err => {
-            console.log(err)
-        })
-    }
     function getCheckedKeys(nodes) {
         let keys = [];
         const traverse = (nodeList) => {
@@ -63,7 +56,6 @@ const ViewMenuModal = ({ isModalOpen, currentUserId }) => {
 
 
     useEffect(() => {
-        console.log(userId)
         axios.get(`${routes.userInfo}${routes.VIEW_MENUS}/${userId}`).then(res => {
             let { message: msg, data, success } = res
             if (success) {
@@ -78,14 +70,11 @@ const ViewMenuModal = ({ isModalOpen, currentUserId }) => {
             message.error(err)
         })
     }, [])
-
-
     const handleOk = () => {
      handleRoleMenus()
     };
 
     const handleCancel = () => {
-        console.log(userId)
         isModalOpen(false)
     };
 

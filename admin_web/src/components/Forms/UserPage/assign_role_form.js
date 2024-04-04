@@ -8,10 +8,10 @@ const AssignRolesModal = ({ isModalOpen, currentUserId }) => {
     const [userId, setUserId] = useState(currentUserId)
     const [roles, setRoles] = useState([])
     const addUser = (params) => {
-        axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
+        axios.post(`${routes.userInfo}`, params).then(res => {
             message.success(res.message)
         }).catch(err => {
-            console.log(err)
+            message.error(err)
         })
     }
 
@@ -52,7 +52,6 @@ const AssignRolesModal = ({ isModalOpen, currentUserId }) => {
     };
 
     const handleCancel = () => {
-        console.log(currentUserId)
         isModalOpen(false)
     };
 

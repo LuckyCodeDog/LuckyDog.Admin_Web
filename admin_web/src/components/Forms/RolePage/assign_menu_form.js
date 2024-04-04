@@ -12,7 +12,7 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
         axios.post(`${routes.baseURL}${routes.userInfo}`, params).then(res => {
             message.success(res.message)
         }).catch(err => {
-            console.log(err)
+            message.error(err)
         })
     }
     function getCheckedKeys(nodes) {
@@ -81,13 +81,11 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
     };
 
     const handleCancel = () => {
-        console.log(currentRoleId)
         isModalOpen(false)
     };
 
 
     const onCheck = ( values , info)=>{
-       console.log(info.checkedNodes)
        var checkedNodes = info.checkedNodes.map(n=>{
         return {
             menuId:n.key,
@@ -95,7 +93,6 @@ const AssignMenuModal = ({ isModalOpen, currentRoleId }) => {
         };
     })
          setCheckedForApi(checkedNodes)   
-        console.log(checkedNodes)
        setCheckedKeys(values) 
     }
 

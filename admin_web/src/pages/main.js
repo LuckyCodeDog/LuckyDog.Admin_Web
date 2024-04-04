@@ -12,6 +12,7 @@ import {
 import Headers from '../layout/header';
 import Slider from '../layout/slider';
 import { Breadcrumb, Layout, Menu, theme, Card, Image } from 'antd';
+import Breadcrumbs from '../components/Breadcrums';
 const { Header, Content, Footer, Sider } = Layout;
 
 
@@ -32,10 +33,7 @@ const Main = () => {
             <Headers></Headers>
         </Header>
         <Content style={{margin: '0 16px',}}>
-          <Breadcrumb style={{margin: '16px 0',}}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumbs></Breadcrumbs>
           {/* set  route out let here */}
           <Outlet></Outlet>
         </Content>

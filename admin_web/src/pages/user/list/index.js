@@ -28,7 +28,7 @@ const UserManagement = () => {
     })
   }
   const showModal = (record) => {
-    console.log(record)
+  
     Modal.confirm({
       title: 'Are you sure delete this User?',
       content: `Name : ${record.name}`, // 示例使用record的id
@@ -38,7 +38,7 @@ const UserManagement = () => {
 
       },
       onCancel() {
-        console.log('Cancel');
+
       },
     });
   };
@@ -78,7 +78,7 @@ const UserManagement = () => {
 
     axios.get(pageQuryUrl).then(res => {
       let { data, message, success } = res
-      console.log(data)
+
       setUserData(data.dataList)
       setPagination(usePagination => ({
         ...usePagination,
@@ -86,8 +86,6 @@ const UserManagement = () => {
         pageIndex: data.pageIndex,
         pageSize: data.pageSize
       }))
-      console.log("@@")
-      console.log(usePagination.pageIndex)
     })
   }
 
@@ -101,7 +99,6 @@ const UserManagement = () => {
 
   const viewMenusForm = (userId) => {
     setCurrentUserId(userId)
-    console.log("current id ", userId)
     setViewMenusFormState(true)
  
   }
@@ -154,12 +151,14 @@ const UserManagement = () => {
       key: 'status',
       dataIndex: 'status',
       render: (status, record) => {
-
-        var falg = status === 0 ? true : false
-        console.log(falg)
+        var flag = false
+        if(status!=undefined && status!==null)
+        {
+           flag = status === 0 ? true : false
+        }
         return <Switch checkedChildren="Active"
           unCheckedChildren="Frozen"
-          checked={falg} tabIndex={1} onChange={() => { handleUserStatusChange(record.userId) }} size='large' />
+          checked={flag} tabIndex={1} onChange={() => { handleUserStatusChange(record.userId) }} size='large' />
       }
     },
     {
@@ -182,7 +181,6 @@ const UserManagement = () => {
     axios.put(`${apiUrl.userInfo}/${userId}`).then(res => {
       let { message, success } = res
       if (success) {
-        console.log("success")
         pageQuery()
         messageApi.open({
           type: 'success',

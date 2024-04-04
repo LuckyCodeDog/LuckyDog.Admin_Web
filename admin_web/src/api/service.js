@@ -23,9 +23,9 @@ const errorHandle = status => {
   
 // axios二次封装
 const devBaseURL = "https://localhost:7055/api";
-const proBaseURL = "在生产环境下接口的baseURL";
+const proBaseURL = 'http://20.70.176.171:8000/api';
 //在vue的config文件夹下可以看开发环境和生产环境的名称,通常为development和production
-const baseURL = process.env.NODE_ENV === 'development' ? devBaseURL: proBaseURL;
+const baseURL = devBaseURL
 
 //创建axios实例
 const service = axios.create({
