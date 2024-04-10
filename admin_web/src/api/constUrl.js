@@ -13,8 +13,8 @@ const VIEW_MENUS = "/ViewMenus"
 const Menus_URL ="/Menu"
 const VIEW_ROLES_URL = "/ViewRoles"
 const DEV_LOGIN = 'https://localhost:7265/auth/Account'
-const PRO_LOGIN = 'https://20.70.176.171:7000/auth/Account'
-const LOGIN_URL = 'https://localhost:7265/auth/Account'
+const PRO_LOGIN = 'http://20.70.176.171:7000/auth/Account'
+const LOGIN_URL = process.env.NODE_ENV =="development" ? DEV_LOGIN:PRO_LOGIN
 export default {
     userInfo, 
     menuInfo ,

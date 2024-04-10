@@ -25,7 +25,7 @@ const Main = () => {
   
   return (
     <Layout style={{minHeight: '100vh',}}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider width={"270"} collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         <Slider></Slider>
       </Sider>
       <Layout>

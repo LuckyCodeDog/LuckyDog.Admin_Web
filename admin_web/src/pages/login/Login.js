@@ -16,14 +16,18 @@ export default function Login({loginsuccess}) {
                 localStorage.setItem("userName",data.userName)
                 localStorage.setItem("imageurl",data.imageurl)
                 localStorage.setItem("isLogin", "true")
+                console.log(process.env.NODE_ENV);
                 console.log("nav cur")
                 loginsuccess(true)
-                message.success("Login Successful, Welcome: "+data.userName)
+                message.success("Login Successful, Welcome: "+process.env.BASE_URL)
                 navigate("/home")
             }else{
+                console.log("@@")
+                console.log(process.env.BASE_URL)
                 message.error(msg)
             }
         }).catch(err=>{
+            console.log(process.env.BASE_URL)
             message.error(err)
         })
     }

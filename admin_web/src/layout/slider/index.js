@@ -36,16 +36,15 @@ const Slider = () => {
       queryMenu()
   },[]) 
   return (
-    <div>
+  
 
-      <Menu 
+      <Menu
       theme="dark" 
       defaultSelectedKeys={['1']} 
       mode="inline" 
       items={menus} 
       />
 
-    </div>
   );
 };
 export default Slider;
